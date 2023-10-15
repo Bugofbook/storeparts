@@ -1,0 +1,17 @@
+{
+  "name": "@bugofbook/storeparts",
+  "private": false,
+  "version": "0.0.1",
+  "dependencies": {},
+  "repository":"https://github.com/Bugofbook/storeparts",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "type": "commonjs",
+  "exports": {
+    ".": {
+      "require": "./index.cjs.js",
+      "import": "./index.esm.js"
+    }
+  }
+}
