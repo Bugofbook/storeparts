@@ -12,6 +12,12 @@
         "main": "packages/storeparts/src/index.ts",
         "tsConfig": "packages/storeparts/tsconfig.lib.json",
         "assets": [],
+        "additionalEntryPoints": [
+          "packages/storeparts/src/lib/strategy.ts",
+          "packages/storeparts/src/lib/observerKey",
+          "packages/storeparts/src/lib/observer"
+        ],
+        "generateExportsField": true,
         "project": "packages/storeparts/package.json",
         "compiler": "swc",
         "format": ["esm", "cjs"]

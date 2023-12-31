@@ -10,5 +10,5 @@ export * from './lib/observerKey';
 export { default as createReducerPart } from './lib/reducer';
 export * from './lib/reducer'
 
-export { default as createStrategyPart } from './lib/strategy';
-export * from './lib/strategy';
+export { default as createStatePart } from './lib/state';
+export * from './lib/state';

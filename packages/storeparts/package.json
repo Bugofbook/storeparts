@@ -7,11 +7,5 @@
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
-  "type": "commonjs",
-  "exports": {
-    ".": {
-      "require": "./index.cjs.js",
-      "import": "./index.esm.js"
-    }
-  }
+  "type": "commonjs"
 }

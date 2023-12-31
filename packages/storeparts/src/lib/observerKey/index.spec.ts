@@ -15,7 +15,7 @@ function createSubject<T>(subjectName: string, initValue: T) {
 }
 describe('listerStore', () => {
   it('case1', () => {
-    const listerStore = createListerStore();
+    const listerStore = createListerStore<'key1' | 'key2'>();
     const subject1 = createSubject<number>('subject1', 0);
 
     const callback1 = () => {
@@ -34,7 +34,7 @@ describe('listerStore', () => {
     expect(event2()).toBe('subject1: 1');
   });
   it('case2', () => {
-    const listerStore = createListerStore();
+    const listerStore = createListerStore<'key1' | 'key2'>();
     const subject1 = createSubject<number>('subject1', 0);
     const subject2 = createSubject<number>('subject2', 0);
     const callback1 = () => {
