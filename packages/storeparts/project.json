@@ -13,8 +13,10 @@
         "tsConfig": "packages/storeparts/tsconfig.lib.json",
         "assets": [],
         "additionalEntryPoints": [
-          "packages/storeparts/src/lib/strategy.ts",
+          "packages/storeparts/src/lib/state",
           "packages/storeparts/src/lib/observerKey",
+          "packages/storeparts/src/lib/entity",
+          "packages/storeparts/src/lib/reducer",
           "packages/storeparts/src/lib/observer"
         ],
         "generateExportsField": true,

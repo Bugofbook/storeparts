@@ -71,7 +71,7 @@ export type EntityPart<Entity extends BasicEntity = BasicEntity> = {
     // clear
     initialize: () => void;
 }
-export default function createEntitySPart<Entity extends BasicEntity = BasicEntity>(initialEntities: Array<Entity> = []) {
+export default function createEntityPart<Entity extends BasicEntity = BasicEntity>(initialEntities: Array<Entity> = []) {
     let ids: string[] = initialEntities.map((entity) => entity.id);
     const entitiesMap: Map<string, Entity> = new Map(
         initialEntities.map((entity) => [entity.id, entity])
