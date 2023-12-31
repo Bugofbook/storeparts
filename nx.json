@@ -1,13 +1,4 @@
 {
-  "tasksRunnerOptions": {
-    "default": {
-      "runner": "nx-cloud",
-      "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e"],
-        "accessToken": "MjljNWUxZTgtNWY2ZS00NjFlLTg5MDAtZDllMDA4MDUzNTIxfHJlYWQtd3JpdGU="
-      }
-    }
-  },
   "pluginsConfig": {
     "@nx/js": {
       "analyzeSourceFiles": true
@@ -22,10 +13,25 @@
         "{workspaceRoot}/.eslintrc.json",
         "{workspaceRoot}/.eslintignore",
         "{workspaceRoot}/eslint.config.js"
-      ]
+      ],
+      "cache": true
     },
-    "test": {
-      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"]
+    "build": {
+      "cache": true
+    },
+    "@nx/jest:jest": {
+      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"],
+      "cache": true,
+      "options": {
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
     }
-  }
+  },
+  "nxCloudAccessToken": "MjljNWUxZTgtNWY2ZS00NjFlLTg5MDAtZDllMDA4MDUzNTIxfHJlYWQtd3JpdGU="
 }
