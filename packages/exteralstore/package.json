@@ -1,0 +1,10 @@
+{
+  "name": "@bugofbook/exteralstore",
+  "version": "0.0.1",
+  "dependencies": {
+    "@bugofbook/storeparts": "^0.0.1"
+  },
+  "type": "commonjs",
+  "main": "./index.cjs",
+  "module": "./index.js"
+}

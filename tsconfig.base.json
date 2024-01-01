@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@bugofbook/exteralstore": ["packages/exteralstore/src/index.ts"],
       "@bugofbook/storeparts": ["packages/storeparts/src/index.ts"]
     }
   },
