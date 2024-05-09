@@ -1,4 +1,4 @@
-type StateItemID<StateName extends string, HandleName extends string> = `${StateName}_${HandleName}`;
+type StateItemID<StateNames extends string, HandleName extends string> = `${StateNames}_${HandleName}`;
 /**
  * @description state-pattern item
  * @example
@@ -13,34 +13,14 @@ type StateItemID<StateName extends string, HandleName extends string> = `${State
  *   age: 18,
  * };
  */
-type StateItem<StateName extends string, Options extends Record<string, unknown> = Record<string, never>> = {
+interface StateItem<StateNames extends string> {
     /**
      * @description state name
      */
-    stateName: StateName;
-} & Options;
-/**
- * @description state-pattern handle function
- * @example
- * const judgeAge = async (originState, options) => {
- *  switch (options.age) {
- *   case 18:
- *     return await ({
- *       stateName: 'young',
- *       name: 'young',
- *       age: 18,
- *     });
- *   case 65:
- *     return await ({
- *      stateName: 'old',
- *       name: 'old',
- *       age: 65,
- *     });
- *   default:
- *     return originState;
- *  }
- */
-type HandleFunction<StateName extends string, Options extends Record<string, unknown> = Record<string, unknown>> = (originState: StateItem<StateName>, options: Options) => Promise<StateItem<StateName>>;
+    stateName: StateNames;
+}
+type StateHandleOption = unknown;
+type HandleFunction<StateNames extends string, HandleNames extends string, CurrentState extends StateItem<StateNames>, StateObject extends Record<HandleNames, StateHandleOption>> = <HandleName extends HandleNames>(originState: CurrentState, options: StateObject[HandleName]) => Promise<CurrentState>;
 /**
  * @description state-pattern handle function object
  * @example
@@ -50,18 +30,10 @@ type HandleFunction<StateName extends string, Options extends Record<string, unk
  * }
  * 
  */
-type StateHandleObject<StateName extends string, HandleName extends string, Options extends Record<string, unknown> = Record<string, never>> = Partial<Record<HandleName, HandleFunction<StateName, Options>>>
-/**
- * @description state-pattern state object
- * @example
- * const state = {
- *  init: (originState, options) => {...},
- *  young: (originState, options) => {...},
- *  old: (originState, options) => {...},
- * }
- 
- */
-type StateObject<StateName extends string, Options extends Record<string, unknown> = Record<string, never>> = Partial<Record<StateName, HandleFunction<StateName, Options>>>
+// type StateHandleObject<StateNames extends string, HandleNames extends string, CurrentState extends StateItem<StateNames>, StateObject extends Record<HandleNames, StateHandleOption>> = Record<HandleNames, HandleFunction<StateNames, HandleNames, CurrentState, StateObject>>
+type StateHandleObject<StateNames extends string, HandleNames extends string, CurrentState extends StateItem<StateNames>, StateObject extends Record<HandleNames, StateHandleOption>> = {
+    [HandleName in HandleNames]: HandleFunction<StateNames, HandleName, CurrentState, StateObject>
+}
 /**
  * @description state-pattern config item
  * @example
@@ -73,19 +45,16 @@ type StateObject<StateName extends string, Options extends Record<string, unknow
  *   },
  * };
  */
-type StateConfigItem<StateName extends string, HandleName extends string, Options extends Record<string, unknown> = Record<string, never>> = {
-    name: StateName;
-    handleObject: StateHandleObject<StateName, HandleName, Options>;
+export type StateConfigItem<StateNames extends string, HandleNames extends string, CurrentState extends StateItem<StateNames>, StateObject extends Record<HandleNames, StateHandleOption>> = {
+    name: StateNames;
+    handleObject: StateHandleObject<StateNames, HandleNames, CurrentState, StateObject>;
 }
-type HandleConfigItem<StateName extends string, HandleName extends string, Options extends Record<string, unknown> = Record<string, never>> = {
-    name: HandleName;
-    stateObject: StateObject<StateName, Options>;
-}
-type StatePatternStoreProps<StateName extends string, HandleName extends string, Options extends Record<string, unknown> = Record<string, never>> = {
-    initState: StateItem<StateName, Options>,
-    stateConfigItems: Array<StateConfigItem<StateName, HandleName, Options>>,
-    stateNameList: Array<StateName>,
-    handleNameList: Array<HandleName>,
+type StateConfig<StateNames extends string, CurrentState extends StateItem<StateNames>, HandleNames extends string, StateObject extends Record<HandleNames, StateHandleOption>> = Record<StateNames, Record<HandleNames, <HandleName extends HandleNames>(currentState: CurrentState, option: StateObject[HandleName]) => Promise<CurrentState>>>
+type StatePatternStoreProps<StateNames extends string, HandleNames extends string, CurrentState extends StateItem<StateNames>, StateObject extends Record<HandleNames, StateHandleOption>> = {
+    initState: CurrentState,
+    stateConfigItems: Array<StateConfigItem<StateNames, HandleNames, CurrentState, StateObject>>,
+    stateNameList: Array<StateNames>,
+    handleNameList: Array<HandleNames>,
 }
 /**
  * 
@@ -93,63 +62,37 @@ type StatePatternStoreProps<StateName extends string, HandleName extends string,
  * @param {string} handleName the handle name
  * @returns {string} the state-item id
  */
-function getStateID<StateName extends string, HandleName extends string>(stateItem: StateName, handleName: HandleName): StateItemID<StateName, HandleName> {
+function getStateID<StateNames extends string, HandleName extends string>(stateItem: StateNames, handleName: HandleName): StateItemID<StateNames, HandleName> {
     return `${stateItem}_${handleName}`;
 }
-function separateConfigItemWithHandleNames<StateName extends string, HandleName extends string, Options extends Record<string, unknown> = Record<string, never>>(configItem: StateConfigItem<StateName, HandleName, Options>, handleNames: Array<HandleName>): Array<[`${StateName}_${HandleName}`, HandleFunction<StateName>]> {
+
+function separateConfigItemWithHandleNames<StateNames extends string, HandleNames extends string, CurrentState extends StateItem<StateNames>, StateObject extends Record<HandleNames, StateHandleOption>>(configItem: StateConfigItem<StateNames, HandleNames, CurrentState, StateObject>, handleNames: Array<HandleNames>): Array<[`${StateNames}_${HandleNames}`, HandleFunction<StateNames, HandleNames, CurrentState, StateObject>]> {
     const { name, handleObject } = configItem;
     return Object.entries(handleObject)
-        .filter(([handleName]) => handleNames.includes(handleName as HandleName))
-        .map(([handleName, handleFn]) => ([getStateID(name, handleName as HandleName), handleFn as HandleFunction<StateName>]));
+        .filter(([handleName]) => handleNames.includes(handleName as HandleNames))
+        .map(([handleName, handleFn]) => ([getStateID(name, handleName as HandleNames), handleFn as HandleFunction<StateNames, HandleNames, CurrentState, StateObject>]));
 }
-function separateConfigItem<HandleName extends string>(handleNames: Array<HandleName>) {
-    return <StateName extends string, Options extends Record<string, unknown> = Record<string, never>>(configItem: StateConfigItem<StateName, HandleName, Options>) => separateConfigItemWithHandleNames(configItem, handleNames);
-}
-function separateHandleConfigItemWithStateNames<StateName extends string, HandleName extends string, Options extends Record<string, unknown> = Record<string, never>>(configItem: HandleConfigItem<StateName, HandleName, Options>, stateNames: Array<StateName>): Array<[`${StateName}_${HandleName}`, HandleFunction<StateName>]> {
-    const { name, stateObject } = configItem;
-    return Object.entries(stateObject)
-        .filter(([stateName]) => stateNames.includes(stateName as StateName))
-        .map(([stateName, handleFn]) => ([getStateID(stateName as StateName, name), handleFn as HandleFunction<StateName>]));
+function separateConfigItem<StateNames extends string, HandleNames extends string, CurrentState extends StateItem<StateNames>, StateObject extends Record<HandleNames, StateHandleOption>>(handleNames: Array<HandleNames>) {
+    return (configItem: StateConfigItem<StateNames, HandleNames, CurrentState, StateObject>) => separateConfigItemWithHandleNames(configItem, handleNames);
 }
 function includeHandleName<handleName extends string>(handleNames: Array<handleName>, handleName: handleName): boolean {
     return handleNames.includes(handleName);
 }
-function includeStateName<StateName extends string>(stateNames: Array<StateName>, stateName: StateName): boolean {
+function includeStateName<StateNames extends string>(stateNames: Array<StateNames>, stateName: StateNames): boolean {
     return stateNames.includes(stateName);
 }
-
-type StatePart<StateName extends string, HandleName extends string, Options extends Record<string, unknown> = Record<string, never>> = {
+type StatePart<StateNames extends string, HandleNames extends string, CurrentState extends StateItem<StateNames>, StateObject extends Record<HandleNames, StateHandleOption>> = {
     /**
      * @description handle with handle name
      * @param {HandleName} handleName the handle name
-     * @param {Record<string, unknown>} options the handle options
+     * @param {unknown} options the handle options
      */
-    handle: (handleName: HandleName, options: Record<string, unknown>) => Promise<void>;
-    /**
-     * @description set state config item
-     * @param {StateConfigItem<StateName, HandleName>} config the state config item
-     */
-    setStateConfigItem: (config: StateConfigItem<StateName, HandleName, Options>) => void;
-    /**
-     * @description remove state config item
-     * @param {StateName} strategyName the state name
-     */
-    removeStateConfigItem: (strategyName: StateName) => void;
-    /**
-     * @description set handle config item
-     * @param {HandleConfigItem<StateName, HandleName>} config the handle config item
-     */
-    setHandleConfigItem: (config: HandleConfigItem<StateName, HandleName, Options>) => void;
-    /**
-     * @description remove handle config item
-     * @param handleName the handle name
-     */
-    removeHandleConfigItem: (handleName: HandleName) => void;
+    handle: <HandleName extends HandleNames>(handleName: HandleName, options?: Parameters<StateConfig<StateNames, CurrentState, HandleName, StateObject>[StateNames][HandleName]>[1]) => Promise<void>;
     /**
      * @description force change state
-     * @param {StateItem<StateName>} newState the new state
+     * @param {StateItem<StateNames>} newState the new state
      */
-    forceChangeState: (newState: StateItem<StateName>) => void;
+    forceChangeState: (newState: CurrentState) => void;
     /**
      * @description subscribe state change
      * @param {() => void} callbackFn the callback function
@@ -158,81 +101,50 @@ type StatePart<StateName extends string, HandleName extends string, Options exte
     subscribe: (callbackFn: () => void) => () => void;
     /**
      * @description get current state
-     * @returns {StateItem<StateName>} current state
+     * @returns {StateItem<StateNames>} current state
      */
-    getState: () => StateItem<StateName>;
+    getState: () => StateItem<StateNames>;
 }
 
-export default function createStatePart<StateName extends string, HandleName extends string, Options extends Record<string, unknown> = Record<string, never>>(props: StatePatternStoreProps<StateName, HandleName>): StatePart<StateName, HandleName, Options> {
-    let stateItem: StateItem<StateName> = props.initState
-    let stateNames: Array<StateName> = props.stateNameList
-    const handleNames: Array<HandleName> = props.handleNameList
-    const stateHandleMap: Map<StateItemID<StateName, HandleName>, HandleFunction<StateName>> = new Map(props.stateConfigItems.flatMap(separateConfigItem(handleNames)))
+export function createStatePart<StateNames extends string, HandleNames extends string, StateObject extends Record<HandleNames, StateHandleOption>, CurrentState extends StateItem<StateNames> = StateItem<StateNames>>(props: StatePatternStoreProps<StateNames, HandleNames, CurrentState, StateObject>): StatePart<StateNames, HandleNames, CurrentState, StateObject>  {
+    let stateItem: CurrentState = props.initState
+    const stateNames: Array<StateNames> = props.stateNameList
+    const handleNames: Array<HandleNames> = props.handleNameList
+    const stateHandleMap: Map<StateItemID<StateNames, HandleNames>, HandleFunction<StateNames, HandleNames, CurrentState, StateObject>> = new Map(props.stateConfigItems.flatMap(separateConfigItem(handleNames)))
     const listerSet: Set<() => void> = new Set();
     return {
-        handle: async (handleName, options) => {
+        handle: async <HandleName extends HandleNames>(handleName: HandleName, options?: Parameters<StateConfig<StateNames, CurrentState, HandleName, StateObject>[StateNames][HandleName]>[1]) => {
             if (!includeHandleName(handleNames, handleName)) {
-                throw new TypeError(`handle name ${handleName} not in handle name list`);
+                console.warn(`handle name ${handleName} not in handle name list`);
+                return;
             }
             const currentStateName = stateItem.stateName;
             if (!includeStateName(stateNames, currentStateName)) {
-                throw new TypeError(`state name ${currentStateName} not in state name list`);
+                console.warn(`state name ${currentStateName} not in state name list`);
+                return;
             }
             const currentHandleFunction = stateHandleMap.get(getStateID(currentStateName, handleName));
             if (!currentHandleFunction) {
+                console.warn(`state name ${currentStateName} with handle name ${handleName} not in state handle map`);
                 return;
             }
             try {
-                const result = await currentHandleFunction(stateItem, options);
+                const result = await currentHandleFunction<HandleName>(stateItem, options as StateObject[HandleName]);
                 if (!result) {
                     return;
                 }
                 stateItem = result;
                 listerSet.forEach((cb) => cb());
             } catch (error) {
+                console.warn(error);
                 return;
             }
-        },
-        setStateConfigItem: (config) => {
-            const { name } = config;
-            if (!includeStateName(stateNames, name)) {
-                stateNames = stateNames.concat([name]);
-            }
-            const separateConfigFunction = separateConfigItem(handleNames);
-            const handleData = separateConfigFunction(config)
-            handleData.forEach(([stateID, handleFn]) => {
-                stateHandleMap.set(stateID, handleFn);
-            })
-        },
-        removeStateConfigItem: (strategyName)  => {
-            stateNames = stateNames.filter(name => name !== strategyName);
-            handleNames.forEach(handleName => {
-                const stateID = getStateID(strategyName, handleName);
-                stateHandleMap.delete(stateID)
-            })
-        },
-        setHandleConfigItem: (config) => {
-            const { name } = config;
-            if (!includeHandleName(handleNames, name)) {
-                handleNames.push(name);
-            }
-            const separateConfigFunction = separateHandleConfigItemWithStateNames;
-            const handleData = separateConfigFunction(config, stateNames);
-            handleData.forEach(([stateID, handleFn]) => {
-                stateHandleMap.set(stateID, handleFn);
-            })
-        },
-        removeHandleConfigItem: (handleName) => {
-            handleNames.filter(name => name !== handleName);
-            stateNames.forEach(stateName => {
-                const stateID = getStateID(stateName, handleName);
-                stateHandleMap.delete(stateID)
-            })
         },
         forceChangeState: (newState) => {
             const currentStateName = newState.stateName
             if (!includeStateName(stateNames, currentStateName)) {
-                throw new TypeError(`state name ${currentStateName} not in state name list`);
+                console.warn(`state name ${currentStateName} not in state name list`);
+                return;
             }
             stateItem = newState;
             listerSet.forEach((cb) => cb());
