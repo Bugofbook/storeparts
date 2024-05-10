@@ -1,4 +1,4 @@
-import { createStrategyPart } from './index';
+import { createStrategyPart } from './strategy';
 describe('createStrategyFun', () => {
     const strategy = createStrategyPart<number, 'a' | 'b', {a: string, b: number}>({
         strategyNames: ['a', 'b'],

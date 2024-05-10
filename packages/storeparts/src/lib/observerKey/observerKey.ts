@@ -21,7 +21,7 @@ type ObserverKeyPart<Keys> = {
      */
     triggerListerAll: () => void;
 }
-export function createObserverKeyPart<Keys extends string = string>():ObserverKeyPart<Keys> {
+export default function createObserverKeyPart<Keys extends string = string>():ObserverKeyPart<Keys> {
     const listerMap: Map<string, Set<ListenerCallback>> = new Map();
     return {
         subscribeKey: (key) => {
@@ -61,4 +61,3 @@ export function createObserverKeyPart<Keys extends string = string>():ObserverKe
         },
     };
 }
-export default createObserverKeyPart;

@@ -11,11 +11,7 @@
       "cache": true
     },
     "@nx/jest:jest": {
-      "inputs": [
-        "default",
-        "^default",
-        "{workspaceRoot}/jest.preset.js"
-      ],
+      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"],
       "cache": true,
       "options": {
         "passWithNoTests": true
@@ -35,8 +31,17 @@
         "{workspaceRoot}/eslint.config.js"
       ],
       "cache": true
+    },
+    "@nx/rollup:rollup": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["default", "^default"]
     }
   },
-  "nxCloudAccessToken": "MjljNWUxZTgtNWY2ZS00NjFlLTg5MDAtZDllMDA4MDUzNTIxfHJlYWQtd3JpdGU=",
-  "useInferencePlugins": false
+  "useInferencePlugins": false,
+  "release": {
+    "version": {
+      "preVersionCommand": "npx nx run-many -t build"
+    }
+  }
 }

@@ -1,4 +1,4 @@
-import { createReducerPart, createObserverKeyPart } from '@bugofbook/storeparts';
+import { createReducerPart, createObserverKeyPart } from '@bugofbook/store-parts';
 type ModalObserverStore = ReturnType<typeof createObserverKeyPart<'open' | 'option'>>;
 interface State {
     open: boolean;

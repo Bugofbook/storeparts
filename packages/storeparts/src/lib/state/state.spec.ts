@@ -1,5 +1,5 @@
-import type { StateConfigItem } from './index'
-import { createStatePart } from './index'
+import type { StateConfigItem } from './state'
+import createStatePart from './state'
 describe('listerStore', () => {
     it('case1', async () => {
         type StateNames = 'step-1' | 'step-2' | 'step-3-1' | 'step-3-2' | 'step-3-3' | 'step-4-a' | 'step-4-b' | 'step-4-c' | 'step-5'

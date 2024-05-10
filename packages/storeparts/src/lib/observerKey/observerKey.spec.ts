@@ -1,4 +1,4 @@
-import createListerStore from './index';
+import createListerStore from './observerKey';
 function createSubject<T>(subjectName: string, initValue: T) {
   let value = initValue;
   return {

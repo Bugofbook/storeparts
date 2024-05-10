@@ -1,5 +1,5 @@
 {
-  "name": "observer",
+  "name": "@bugofbook/store-parts",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/storeparts/src",
   "projectType": "library",
@@ -8,16 +8,16 @@
       "executor": "@nx/rollup:rollup",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/packages/storeparts",
+        "outputPath": "dist/packages/store-parts",
         "main": "packages/storeparts/src/index.ts",
         "tsConfig": "packages/storeparts/tsconfig.lib.json",
         "assets": [],
         "additionalEntryPoints": [
-          "packages/storeparts/src/lib/state",
-          "packages/storeparts/src/lib/observerKey",
-          "packages/storeparts/src/lib/entity",
-          "packages/storeparts/src/lib/reducer",
-          "packages/storeparts/src/lib/observer"
+          "packages/storeparts/src/lib/state/state.ts",
+          "packages/storeparts/src/lib/observerKey/observerKey.ts",
+          "packages/storeparts/src/lib/entity/entity.ts",
+          "packages/storeparts/src/lib/reducer/reducer.ts",
+          "packages/storeparts/src/lib/observer/observer.ts"
         ],
         "generateExportsField": true,
         "project": "packages/storeparts/package.json",

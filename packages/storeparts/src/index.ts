@@ -1,14 +1,14 @@
-export { default as createEntityPart } from './lib/entity';
-export * from './lib/entity';
+export { default as createEntityPart } from './lib/entity/entity';
+export * from './lib/entity/entity';
 
-export { default as createObserverPart } from './lib/observer';
-export * from './lib/observer'
+export { default as createObserverPart } from './lib/observer/observer';
+export * from './lib/observer/observer'
 
-export { default as createObserverKeyPart } from './lib/observerKey';
-export * from './lib/observerKey';
+export { default as createObserverKeyPart } from './lib/observerKey/observerKey';
+export * from './lib/observerKey/observerKey';
 
-export { default as createReducerPart } from './lib/reducer';
-export * from './lib/reducer'
+export { default as createReducerPart } from './lib/reducer/reducer';
+export * from './lib/reducer/reducer';
 
-export { default as createStatePart } from './lib/state';
-export * from './lib/state';
+export { default as createStatePart } from './lib/state/state';
+export * from './lib/state/state';

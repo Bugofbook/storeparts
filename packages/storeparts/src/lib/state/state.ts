@@ -106,7 +106,7 @@ type StatePart<StateNames extends string, HandleNames extends string, CurrentSta
     getState: () => StateItem<StateNames>;
 }
 
-export function createStatePart<StateNames extends string, HandleNames extends string, StateObject extends Record<HandleNames, StateHandleOption>, CurrentState extends StateItem<StateNames> = StateItem<StateNames>>(props: StatePatternStoreProps<StateNames, HandleNames, CurrentState, StateObject>): StatePart<StateNames, HandleNames, CurrentState, StateObject>  {
+export default function createStatePart<StateNames extends string, HandleNames extends string, StateObject extends Record<HandleNames, StateHandleOption>, CurrentState extends StateItem<StateNames> = StateItem<StateNames>>(props: StatePatternStoreProps<StateNames, HandleNames, CurrentState, StateObject>): StatePart<StateNames, HandleNames, CurrentState, StateObject>  {
     let stateItem: CurrentState = props.initState
     const stateNames: Array<StateNames> = props.stateNameList
     const handleNames: Array<HandleNames> = props.handleNameList
