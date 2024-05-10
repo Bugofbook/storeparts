@@ -15,8 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@bugofbook/exteralstore": ["packages/exteralstore/src/index.ts"],
-      "@bugofbook/store-parts": ["packages/storeparts/src/index.ts"]
+      "@bugofbook/store-modal": ["packages/store-modal/src/index.ts"],
+      "@bugofbook/store-parts": ["packages/store-parts/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

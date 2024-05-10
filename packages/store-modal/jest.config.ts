@@ -19,12 +19,12 @@ if (swcJestConfig.swcrc === undefined) {
 // swcJestConfig.module.noInterop = false;
 
 export default {
-  displayName: 'exteralstore',
+  displayName: 'store-modal',
   preset: '../../jest.preset.js',
   transform: {
     '^.+\\.[tj]s$': ['@swc/jest', swcJestConfig],
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  testEnvironment: 'jsdom',
-  coverageDirectory: '../../coverage/packages/exteralstore',
+  testEnvironment: 'node',
+  coverageDirectory: '../../coverage/packages/store-modal',
 };
